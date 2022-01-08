@@ -1,12 +1,13 @@
 import './App.css'
-import React, { ChangeEvent, useState } from 'react'
+
 import axios from 'axios'
+import React, { ChangeEvent, useState } from 'react'
 
 const SERVER_URL = 'http://localhost:5005/'
 
 function App() {
   const [selectedImage, setSelectedImage] = useState<any>()
-  const [imageUrl, setImageUrl] = useState<string>('')
+  const [imageUrl, setImageUrl] = useState<string | null>('')
 
   /**
    * on image selection
@@ -21,25 +22,33 @@ function App() {
   }
 
   /**
+   * actual image upload
+   * @param data: form data or json
+   */
+  const uploadImage = (data: any) => {
+    const url = SERVER_URL + 'upload_image'
+    axios
+      .post(url, data)
+      .then(() => {
+        alert('Image uploaded')
+        setSelectedImage(null)
+        setImageUrl(null)
+      })
+      .catch(() => {
+        alert('Something went wrong with the upload')
+      })
+  }
+
+  /**
    * upload selected image
    */
-  const uploadImage = () => {
+  const uploadImageFile = () => {
     if (selectedImage) {
       // create and update form data
       const formData = new FormData()
       formData.append('file', selectedImage)
-
-      // send form data
-      const url = SERVER_URL + 'upload_image'
-      axios
-        .post(url, formData)
-        .then(() => {
-          alert('Image uploaded')
-          setSelectedImage(null)
-        })
-        .catch(() => {
-          alert('Something went wrong with the upload')
-        })
+      // send data
+      uploadImage(formData)
     }
   }
 
@@ -56,17 +65,7 @@ function App() {
         url: imageUrl,
       }
 
-      // send form data
-      const url = SERVER_URL + 'upload_image'
-      axios
-        .post(url, data)
-        .then(() => {
-          alert('Image uploaded')
-          setSelectedImage(null)
-        })
-        .catch(() => {
-          alert('Something went wrong with the upload')
-        })
+      uploadImage(data)
     }
   }
 
@@ -88,7 +87,7 @@ function App() {
             />
           </label>
           <div>
-            <button className="btn" onClick={uploadImage}>
+            <button className="btn" onClick={uploadImageFile}>
               Upload
             </button>
           </div>
