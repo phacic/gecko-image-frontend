@@ -1,17 +1,72 @@
 import './App.css'
-
 import React, { ChangeEvent, useState } from 'react'
+import axios from 'axios'
+
+const SERVER_URL = 'http://localhost:5005/'
 
 function App() {
-
   const [selectedImage, setSelectedImage] = useState<any>()
+  const [imageUrl, setImageUrl] = useState<string>('')
 
+  /**
+   * on image selection
+   * @param e
+   */
   const onImageFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files)
+    // set selected image if file was actually selected
     if (e.target.files && e.target.files.length > 0) {
+      console.log(e.target.files[0])
       setSelectedImage(e.target.files[0])
+    }
+  }
 
-      console.log('selected image', selectedImage)
+  /**
+   * upload selected image
+   */
+  const uploadImage = () => {
+    if (selectedImage) {
+      // create and update form data
+      const formData = new FormData()
+      formData.append('file', selectedImage)
+
+      // send form data
+      const url = SERVER_URL + 'upload_image'
+      axios
+        .post(url, formData)
+        .then(() => {
+          alert('Image uploaded')
+          setSelectedImage(null)
+        })
+        .catch(() => {
+          alert('Something went wrong with the upload')
+        })
+    }
+  }
+
+  const onUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setImageUrl(e.target.value)
+  }
+
+  /**
+   * upload image using a url
+   */
+  const uploadImageUrl = () => {
+    if (imageUrl !== '') {
+      const data = {
+        url: imageUrl,
+      }
+
+      // send form data
+      const url = SERVER_URL + 'upload_image'
+      axios
+        .post(url, data)
+        .then(() => {
+          alert('Image uploaded')
+          setSelectedImage(null)
+        })
+        .catch(() => {
+          alert('Something went wrong with the upload')
+        })
     }
   }
 
@@ -33,7 +88,9 @@ function App() {
             />
           </label>
           <div>
-            <button className="btn">upload</button>
+            <button className="btn" onClick={uploadImage}>
+              Upload
+            </button>
           </div>
         </div>
 
@@ -42,11 +99,16 @@ function App() {
           <div className="basis-3/4">
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              type="text" placeholder="Image url"
+              type="text"
+              placeholder="Image url"
+              value={imageUrl}
+              onChange={onUrlChange}
             />
           </div>
           <div className="basis-1/4">
-            <button className="btn">upload</button>
+            <button className="btn" onClick={uploadImageUrl}>
+              upload
+            </button>
           </div>
         </div>
       </div>
