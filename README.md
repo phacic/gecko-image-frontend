@@ -1,5 +1,11 @@
 # Image uploader
 
+## install packages
+
+```shell
+npm/yarn/pnpm install
+```
+
 ## Run app
 
 ```shell
