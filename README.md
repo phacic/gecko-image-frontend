@@ -2,6 +2,8 @@
 
 ## install packages
 
+Requires `node >= 12`. For yarn `node >= 16`
+
 ```shell
 npm/yarn/pnpm install
 ```
